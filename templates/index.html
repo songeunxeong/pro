@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <title> </title>
+    # url_for('folder', filename='filename.ext')
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<h1>  </h1>
+<div class="agile-its">
+    <h2>upload your music file</h2>
+    <div class="w3layouts">
+        <div class="photos-upload-view">
+            <form id="upload" action="/uploader" method="POST" enctype="multipart/form-data">
+                <div class="upload-btn-wrapper">
+                    <button class="btn"> 음악 업로드</button>
+                    <input type="file" value="Upload" name="music">
+                </div>
+                <input type="submit" value=" ">
+                <button calss"btn"> 음악 재생</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

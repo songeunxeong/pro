@@ -34,14 +34,14 @@ class MatrixBuilder:
     def choose(self, value_counts):
 
         counted_sum = 0
-        count_sum = sum(choice_counts)
+        count_sum = sum(value_counts)
 
         if count_sum == 0:
-            return random.randint(0, len(choice_counts)-1)
+            return random.randint(0, len(value_counts)-1)
         else:
             selected_count = random.randrange(1, count_sum + 1)
-            for index in range(0, len(choice_counts)):
-                counted_sum += choice_counts[index]
+            for index in range(0, len(value_counts)):
+                counted_sum += value_counts[index]
                 if(counted_sum >= selected_count):
                     return index
         raise RuntimeError("Impossible value selection made. BAD!")

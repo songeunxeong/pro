@@ -18,7 +18,9 @@ class MarcovMatrix:
         durations = np.array(song, dtype=str)[:, 1] # ['32', '16', ...]
         for i, d in enumerate(durations):
             durations[i] = self.float2str(durations[i])
-        
+            
+            
+        # uniq_song은 start_note 추출 
         uniq_song = np.unique(song, axis=0).tolist() # [('c4', 16)]
         uniq_pitch = np.unique(pitch).tolist() # ['c4', 'd4']
         uniq_durations = np.unique(durations).tolist() 
@@ -69,6 +71,9 @@ class MarcovMatrix:
         pitch_indexnum = self.pitch_index[from_note[0]]  # 해당하는 행의 index번호
         dura_indexnum = self.dura_index[from_note[1]]
         
+        pitch_indexnum = self.same_note_check(pitch_indexnum, pitch=True)  # 한 음정 반복되는 오류 검사
+        dura_indexnum = self.same_note_check(dura_indexnum, pitch=False)
+        
         pitch_row = Pitch[pitch_indexnum]
         dura_row = Durations[dura_indexnum]
         
@@ -93,6 +98,36 @@ class MarcovMatrix:
                 cur_sum += row[i]
                 if(cur_sum >= randomly_number):
                     return i
-        raise RuntimeError("impossoble selection")                
+        raise RuntimeError("impossoble selection")            
+        
+            
+    def same_note_check(self, indexnum, pitch=True):
+        check = 0
+        test_index = indexnum
+        
+        if pitch==True:
+            
+            while True:
+                for i in len(uniq_pitch):
+                    if Pitch[test_index][i]==0:
+                        check += 1
+            # check가 전체길이-1과 같으면 행렬요소값이 하나만 존재하고 나머지는 0
+                if check == (len(uniq_pitch)-1): 
+                    test_index = random.randrange(0, len(uniq_pitch))
+                    continue    
+                else:
+                    return test_index                   
+        else:
+              while True:
+                for i in len(uniq_durations):
+                    if Durations[test_index][i]==0:
+                        check += 1
+            # check가 전체길이-1과 같으면 행렬요소값이 하나만 존재하고 나머지는 0
+                if check == (len(uniq_durations)-1): 
+                    test_index = random.randrange(0, len(uniq_durations))
+                    continue    
+                else:
+                    return test_index    
+        
 
         

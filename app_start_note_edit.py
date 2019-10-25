@@ -24,7 +24,8 @@ def wav_transform():
         empty_notes = controller.NoteConvertor(data)
         notes = empty_notes.convertor()
         song = sum(notes, [])
-
+        
+        # start_note 수정
         composition_model = controller.MarcovMatrix(song)
         candidate = composition_model.uniqu_song()
         choice = random.randrange(0, len(candidate)-1)

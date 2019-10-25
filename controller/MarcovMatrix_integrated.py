@@ -5,6 +5,7 @@ class MarcovMatrix:
 
     def __init__(self, song=None):
         self.previous_note = None
+        self.uniq_song = []
         self.uniq_pitch = []
         self.uniq_durations = []
         self.pitch_index = {}
@@ -17,8 +18,9 @@ class MarcovMatrix:
         durations = np.array(song, dtype=str)[:, 1] # ['32', '16', ...]
         for i, d in enumerate(durations):
             durations[i] = self.float2str(durations[i])
-          
-        uniq_pitch = np.unique(pitch).tolist() #['c4', 'd4']
+        
+        uniq_song = np.unique(song, axis=0).tolist() # [('c4', 16)]
+        uniq_pitch = np.unique(pitch).tolist() # ['c4', 'd4']
         uniq_durations = np.unique(durations).tolist() 
         
         Pitch, pitch_index = self.matrixbuilder(uniq_pitch)

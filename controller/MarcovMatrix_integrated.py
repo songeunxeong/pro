@@ -20,7 +20,7 @@ class MarcovMatrix:
             durations[i] = self.float2str(durations[i])
             
             
-        # uniq_song은 start_note 추출 
+        # uniq_song은 start_note 추출
         uniq_song = np.unique(song, axis=0).tolist() # [('c4', 16)]
         uniq_pitch = np.unique(pitch).tolist() # ['c4', 'd4']
         uniq_durations = np.unique(durations).tolist() 

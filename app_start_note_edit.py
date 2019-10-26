@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 import numpy as np
 import pysynth as ps
 from scipy.io import wavfile
+import librosa
 
 app = Flask(__name__)
 
@@ -20,10 +21,10 @@ def wav_transform():
         f = request.files['file']
         f.save(f'static/file1.wav')
         sr, data = wavfile.read('static/file1.wav')
+        bpm, beats = librosa.beat.beat_track(y=y, sr=sr)    #y? sr?
 
-        empty_notes = controller.NoteConvertor(data)
-        notes = empty_notes.convertor()
-        song = sum(notes, [])
+        convertor = controller.NoteConvertor(data, bpm)
+        song = convertor.convert()
         
         # start_note 수정
         composition_model = controller.MarcovMatrix(song)

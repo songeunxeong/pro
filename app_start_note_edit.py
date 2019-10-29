@@ -20,7 +20,11 @@ def wav_transform():
     if request.method == 'POST':
         f = request.files['file']
         f.save(f'static/file1.wav')
-        sr, data = wavfile.read('static/file1.wav')
+        try:
+            sr, data = wavfile.read('static/file1.wav')
+        except ValueError:
+            return render_template('error.html')  #wav파일외업로드시 error페이지로 이동
+        
         bpm, beats = librosa.beat.beat_track(y=y, sr=sr)    #y? sr?
 
         convertor = controller.NoteConvertor(data, bpm)

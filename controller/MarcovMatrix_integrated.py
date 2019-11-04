@@ -22,8 +22,8 @@ class MarcovMatrix:
         self.uniq_pitch = np.unique(pitch).tolist() # ['c4', 'd4']
         self.uniq_durations = np.unique(durations).tolist() 
         
-        self.Pitch, self.pitch_index = self.matrixbuilder(uniq_pitch)
-        self.Durations, self.dura_index = self.matrixbuilder(uniq_durations)
+        self.Pitch, self.pitch_index = self.matrixbuilder(self.uniq_pitch)
+        self.Durations, self.dura_index = self.matrixbuilder(self.uniq_durations)
 
         for note in song:  # note ('c4', 32)
             self.add(note, self.pitch_index, self.dura_index)

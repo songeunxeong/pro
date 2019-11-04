@@ -1,4 +1,4 @@
-class NoteConvertor(object):
+class NoteTempoConvertor(object):
 
     def __init__(self, data, bpm):
         self.data = data.T

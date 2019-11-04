@@ -19,13 +19,13 @@ def index():
 def wav_transform():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(f'static/file.wav')
+        f.save(f'static/original_song.wav')
         try:
-            sr, data = wavfile.read('static/file.wav')
+            sr, data = wavfile.read('static/original_song.wav')
         except ValueError:
             return render_template('error.html')  #wav파일외업로드시 error페이지로 이동
         
-        y, sr1 = librosa.load('static/file.wav')
+        y, sr1 = librosa.load('static/original_song.wav')
         bpm, beats = librosa.beat.beat_track(y=y, sr=sr1)    #y? sr?
 
         convertor = controller.NoteConvertor(data, bpm)
@@ -42,8 +42,10 @@ def wav_transform():
                 start_note = composition_model.next_note(start_note)
                 random_song.append(start_note)
 
-        ps.make_wav(random_song, fn='./random.wav')
-
+#        ps.make_wav(random_song, fn='./random.wav')
+        midi = MakeMidi(random_song, bpm, "static/new_song.midi")
+        midi.makemidi()
+        
         return render_template('wavplay.html')
 
 

@@ -28,7 +28,7 @@ def wav_transform():
         y, sr1 = librosa.load('static/original_song.wav')
         bpm, beats = librosa.beat.beat_track(y=y, sr=sr1)    #y? sr?
 
-        convertor = controller.NoteConvertor(data, bpm)
+        convertor = controller.NoteTempoConvertor(data, bpm)
         song = convertor.convert()
         
         # start_note 수정

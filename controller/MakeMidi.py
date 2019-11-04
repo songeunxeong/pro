@@ -20,6 +20,7 @@ class MakeMidi:
             else:
                 pitch = s[0][:-1]
                 octave = int(s[0][-1]) + 1
+                # octav 10 수정해야 함 
                 pitch_number = note_names.index(pitch.lower())
                 result.append(Note(pitch_number, octave=octave, dur=duration))
             

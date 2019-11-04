@@ -1,7 +1,7 @@
 class NoteTempoConvertor(object):
 
     def __init__(self, data, bpm):
-        self.data = data.T
+        self.data = data.T[0]   # data.T? data.T[0]?**
         self.bpm = bpm
         self.rate = 44000
         self.block_size = int(self.rate*60*(1/self.bpm)*(1/8))
@@ -50,14 +50,38 @@ class NoteTempoConvertor(object):
         Y=Y[range(int(size/2))]          # single sied frequency range
 
         amplitude_Hz = 2*abs(Y)
-        banks = np.where((amplitude_Hz >= (amplitude_Hz.max() * 0.90)) & (amplitude_Hz > 500))
+        banks = np.where((amplitude_Hz >= (amplitude_Hz.max() * 0.90)) & (amplitude_Hz > 500))  # 진폭 test
         pitchs = []
         for bank in banks[0]:
             pitchs.append(f0[bank])
         return pitchs
 
     def __decide_note(self, pitch):
-        if pitch > 33 and pitch <= 34:
+        if pitch > 16 and pitch <= 17:
+            return 'c0'
+        elif pitch > 17 and pitch <= 18:
+            return 'c#0'
+        elif pitch > 18 and pitch <= 19:
+            return 'd0'
+        elif pitch > 19 and pitch <= 20:
+            return 'd#0'
+        elif pitch > 20 and pitch <= 21:
+            return 'e0'
+        elif pitch > 21 and pitch <= 22:
+            return 'f0'
+        elif pitch > 22 and pitch <= 23:
+            return 'f#0'
+        elif pitch > 23 and pitch <= 25:
+            return 'g0'
+        elif pitch > 25 and pitch <= 27:
+            return 'g#0'   
+        elif pitch > 27 and pitch <= 28:
+            return 'a0'
+        elif pitch > 28 and pitch <= 30:
+            return 'a#0'
+        elif pitch > 30 and pitch <= 33:
+            return 'b0'
+        elif pitch > 33 and pitch <= 34:
             return 'c1'
         elif pitch > 34 and pitch <= 36:
             return 'c#1'
@@ -126,7 +150,7 @@ class NoteTempoConvertor(object):
         elif pitch > 240 and pitch <= 254:
             return 'b3'
         elif pitch > 254 and pitch <= 270:
-            return 'c4'      
+            return 'c4'
         elif pitch > 270 and pitch <= 285:
             return 'c#4'
         elif pitch > 285 and pitch <= 302:
@@ -168,7 +192,7 @@ class NoteTempoConvertor(object):
         elif pitch > 807 and pitch <= 855:
             return 'g#5'
         elif pitch > 855 and pitch <= 906:
-            return 'a5' 
+            return 'a5'
         elif pitch > 906 and pitch <= 960:
             return 'a#5'
         elif pitch > 960 and pitch <= 1482:
@@ -210,7 +234,7 @@ class NoteTempoConvertor(object):
         elif pitch > 2715 and pitch <= 2876:
             return 'f7'
         elif pitch > 2876 and pitch <= 3048:
-            return 'f#7'      
+            return 'f#7'
         elif pitch > 3048 and pitch <= 3229:
             return 'g7'
         elif pitch > 3229 and pitch <= 3421:
@@ -221,5 +245,79 @@ class NoteTempoConvertor(object):
             return 'a#7'
         elif pitch > 3840 and pitch <= 4000:
             return 'b7'
+        elif pitch > 4000 and pitch <= 4310:
+            return 'c8'
+        elif pitch > 4310 and pitch <= 4567:
+            return 'c#8'
+        elif pitch > 4567 and pitch <= 4838:
+            return 'd8'
+        elif pitch > 4838 and pitch <= 5126:
+            return 'd#8'
+        elif pitch > 5126 and pitch <= 5431:
+            return 'e8'
+        elif pitch > 5431 and pitch <= 5754:
+            return 'f8'
+        elif pitch > 5754 and pitch <= 6096:
+            return 'f#8'
+        elif pitch > 6096 and pitch <= 6458:
+            return 'g8'
+        elif pitch > 6458 and pitch <= 6842:
+            return 'g#8'
+        elif pitch > 6842 and pitch <= 7249:
+            return 'a8'
+        elif pitch > 7249 and pitch <= 7680:
+            return 'a#8' 
+        elif pitch > 7680 and pitch <= 8137:
+            return 'b8'
+        elif pitch > 8137 and pitch <= 8621:
+            return 'c9'
+        elif pitch > 8621 and pitch <= 9134:
+            return 'c#9'
+        elif pitch > 9134 and pitch <= 9677:
+            return 'd9'
+        elif pitch > 9677 and pitch <= 10252:
+            return 'd#9'
+        elif pitch > 10252 and pitch <= 10862:
+            return 'e9'
+        elif pitch > 10862 and pitch <= 11507:
+            return 'f9'
+        elif pitch > 11507 and pitch <= 12192:
+            return 'f#9'
+        elif pitch > 12192 and pitch <= 12917:
+            return 'g9'
+        elif pitch > 12917 and pitch <= 13685:
+            return 'g#9'
+        elif pitch > 13685 and pitch <= 14499:
+            return 'a9'
+        elif pitch > 14499 and pitch <= 15361:
+            return 'a#9'
+        elif pitch > 15361 and pitch <= 16274:
+            return 'b9'
+        elif pitch > 16274 and pitch <= 17242:
+            return 'c10'
+        elif pitch > 17242 and pitch <= 18267:
+            return 'c#10'
+        elif pitch > 18267 and pitch <= 19353:
+            return 'd10'
+        elif pitch > 19353 and pitch <= 20504:
+            return 'd#10'
+        elif pitch > 20504 and pitch <= 21723:
+            return 'e10'
+        elif pitch > 21723 and pitch <= 23015:
+            return 'f10'
+        elif pitch > 23015 and pitch <= 24384:
+            return 'f#10'
+        elif pitch > 24384 and pitch <= 25834:
+            return 'g10'
+        elif pitch > 25834 and pitch <= 27370:
+            return 'g#10'
+        elif pitch > 27370 and pitch <= 28997:
+            return 'a10'
+        elif pitch > 28997 and pitch <= 30722:
+            return 'a#10'
+        elif pitch > 30722 and pitch <= 31610:
+            return 'b10'
+        elif pitch > 31610:
+            return 'max'
         else:
-            return 'x'
+            return ''

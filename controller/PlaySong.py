@@ -2,7 +2,6 @@ import pygame
 import time
 
 # class로 정리할 것
-# bpm 조절 
 
 def playsound(soundfile):
     pygame.init()

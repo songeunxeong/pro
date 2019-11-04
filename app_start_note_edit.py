@@ -25,7 +25,8 @@ def wav_transform():
         except ValueError:
             return render_template('error.html')  #wav파일외업로드시 error페이지로 이동
         
-        bpm, beats = librosa.beat.beat_track(y=y, sr=sr)    #y? sr?
+        y, sr1 = librosa.load('static/file1.wav')
+        bpm, beats = librosa.beat.beat_track(y=y, sr=sr1)    #y? sr?
 
         convertor = controller.NoteConvertor(data, bpm)
         song = convertor.convert()

@@ -4,8 +4,8 @@ class NoteTempoConvertor(object):
         self.data = data.T
         self.bpm = bpm
         self.rate = 44000
-        self.block_size = int(rate*60*(1/bpm)*(1/8))
-        self.block_length = int(len(data) /block_size)
+        self.block_size = int(self.rate*60*(1/self.bpm)*(1/8))
+        self.block_length = int(len(self.data)/self.block_size)
 
     def convert(self):
         notes = []

@@ -1,9 +1,9 @@
 class NoteTempoConvertor(object):
 
-    def __init__(self, data, bpm):
+    def __init__(self, data, bpm, sr):
         self.data = data.T[0]   # data.T? data.T[0]?**
         self.bpm = bpm
-        self.rate = 44000
+        self.rate = sr
         self.block_size = int(self.rate*60*(1/self.bpm)*(1/8))
         self.block_length = int(len(self.data)/self.block_size)
 

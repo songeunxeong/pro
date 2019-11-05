@@ -2,9 +2,11 @@ import flask
 from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 import numpy as np
-import pysynth as ps
+# import pysynth as ps
 from scipy.io import wavfile
 import librosa
+from pyknon.genmidi import Midi
+from pyknon.music import NoteSeq, Note, Rest
 
 app = Flask(__name__)
 

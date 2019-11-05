@@ -21,12 +21,13 @@ class MakeMidi:
             elif {s[0]}.issubset(note_octav10):
                 pitch = s[0][:-2]
                 octav = int(s[0][-2:]) + 1
+                pitch_number = note_names.index(pitch.lower())
+                result.append(Note(pitch_number, octave=octave, dur=duration))
             else:
                 pitch = s[0][:-1]
                 octave = int(s[0][-1]) + 1
-                
-            pitch_number = note_names.index(pitch.lower())
-            result.append(Note(pitch_number, octave=octave, dur=duration))
+                pitch_number = note_names.index(pitch.lower())
+                result.append(Note(pitch_number, octave=octave, dur=duration))                
             
         midi = Midi(number_tracks=1, tempo=self.bpm)
         midi.seq_notes(result, track=0)

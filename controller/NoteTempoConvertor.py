@@ -317,7 +317,5 @@ class NoteTempoConvertor(object):
             return 'a#10'
         elif pitch > 30722 and pitch <= 31610:
             return 'b10'
-        elif pitch > 31610:
-            return 'max'
         else:
-            return ''
+            return 'r'

@@ -18,10 +18,25 @@ class NoteTempoConvertor(object):
             part = self.data[self.block_size * i: self.block_size * (i+1)]
             pitchs = self.__fourier_transform(part)
             note = []
-            for pitch in pitchs:
-                note.append(self.__decide_note(pitch))
-            notes.append(note)
-
+            if pitchs:
+                for pitch in pitchs:
+                    note.append(self.__decide_note(pitch))
+            else:
+                note.append('r')
+                
+            # 한 block 에서 두 개 이상 주파수 추출될 때 하나로
+            if(len(note) >= 2 and i > 0):
+                for j in range(len(note)):
+                    if note[j]==before_note:
+                        flow = [note[j]]
+                        break
+                    flow = [note[0]]
+                before_note = flow
+                notes.append(flow)
+            else:
+                before_note = note
+                notes.append(note)
+            
         notes = sum(notes, [])
         song = []
         tempo = 1/32
@@ -42,7 +57,6 @@ class NoteTempoConvertor(object):
             song[i][1] = 1/song[i][1]
 
         return song
-
 
     def __fourier_transform(self, wave_sample):
         size = len(wave_sample)

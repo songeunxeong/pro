@@ -38,6 +38,8 @@ class NoteTempoConvertor(object):
                 notes.append(note)
             
         notes = sum(notes, [])
+        # 3개 연속 음정 추출 되는 것 중 옥타브 2 이상 차이 제거
+        notes = self.remove_note(notes)
         song = []
         tempo = 1/32
 
@@ -340,6 +342,38 @@ class NoteTempoConvertor(object):
             return 'max'
         else:
             return 'r'
+        
+    def remove_note(self, notes):
+        note_names = 'c c# d d# e f f# g g# a a# b'.split()
+        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10' ,'b10'}
+        octavs = []
+        remov = []
+        octav = 0
+        
+        for note in notes:
+            if note=='r':
+                octavs.append('r')
+            elif {note}.issubset(octav10):
+                octav = int(note[-2:])
+                octavs.append(octav)
+            else:
+                octav = int(note[-1:])
+                octavs.append(octav)
+                
+        for x in range(len(octavs)-2):
+            if((type(octavs[x]) == int)
+              and (type(octavs[x+1]) == int)
+              and (type(octavs[x+2]) == int)):
+                if((abs(octavs[x]-octavs[x+1]) >= 2)
+                  and (abs(octavs[x+1]-octavs[x+2]) >= 2)):
+                    remov.append(x+1)
+
+        if remov:
+            for x in range(len(remov)):
+                del notes[remov[x]]
+            return notes
+        else:
+            return notes
 
 class MarcovMatrix:
 

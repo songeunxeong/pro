@@ -47,7 +47,8 @@
         </style>
     </head>
     <body>
-        <h1> 파일 입력받기 </h1>
+        <h1> PitchDetection & Composition </h1>
+        <h2> upload your file </h2>
         <form action = "/uploader" method = "POST"
               enctype = "multipart/form-data">
 				<fieldset>
@@ -55,7 +56,7 @@
 						<label>wav 파일 선택 : <input type = "file" accept=".wav" name = "file" /></label>
 					</li>
 					<li>
-						<label>곡 길이 : <input type = "text" placeholder = "무슨단위로 입력" name = "length" /></label>
+						<label>곡 길이 : <input type = "text" placeholder = "note count" name = "length" /></label>
 					</li>
 				</fieldset>
 				<fieldset>

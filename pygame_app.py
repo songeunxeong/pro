@@ -50,8 +50,6 @@ def wav_transform():
 
         midi = controller.MakeMidi(random_song, bpm, "static/random.midi")
         midi.makemidi()
-#        ps.make_wav(random_song, fn='static/random.wav')
-
         return render_template('midiplay.html')
 
 @app.route('/midi_play')

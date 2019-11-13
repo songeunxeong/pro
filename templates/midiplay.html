@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> play and download </title>
+        <meta charset="UTF-8">
+        <style>
+            li label{
+                width:121px;
+                float:center;
+                font-size:20px;
+                font-weight:bold;
+                line-height:25px;
+            }
+            body{
+                backgound-size: cover;
+                font-family: 'Open Sans', sans-serif;
+                background: #a27fb2 fixed center;
+                text-align:center
+            }
+            h1, h2, h3, h4, h5, h6{
+                font-family: 'Montserrat', sans-serif;
+                margin-top:30px;
+                background: #fff;
+                font-size:40px;
+                color:#a27fb2
+            }
+            fieldset{
+            margin: 40px 15px;
+            }
+            li{
+                list-style-type:none;
+                color: #fff;
+            }
+            button{
+                width:200px;
+                background-color:#fff;
+                border:none;
+                color:#a27fb2;
+                padding:10px 0;
+                text-align:center;
+                text-decoration:none;
+                display:inline-block;
+                font-size:20px;
+                font-weight:bold;
+                margin:4px;
+                cursor:pointer;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h3>play and download</h3>
+
+        <fieldset>
+          <li>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script type=text/javascript>
+              $(function() {
+                $('a#play').bind('click', function() {
+                  $.getJSON('/midi_play',
+                  function(data){
+                    // do nothing
+                  });
+                  return false;
+                });
+              });
+            </script>
+            
+            <a href=# id=play><button>PLAY</button></a>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script type=text/javascript>
+              $(function() {
+                $('a#stop').bind('click', function() {
+                  $.getJSON('/midi_stop',
+                  function(data){
+                    // do nothing
+                  });
+                  return false;
+                });
+              });
+            </script>
+            <a href=# id=stop><button>STOP</button></a>
+          </li>
+        </fieldset>
+
+        <fieldset>
+          <li>
+			      <label><a href="static\random.midi" download>DOWNLOAD</a></label>
+			    </li>
+        </fieldset>
+
+    </body>
+</html>

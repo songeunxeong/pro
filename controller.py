@@ -13,7 +13,7 @@ class NoteTempoConvertor(object):
         self.block_length = int(len(self.data)/self.block_size)
 
     def convert(self):
-        notes = [] # 한 block에서 두 개 이상 추출되는거 제거 후 
+
         multiple_notes = [] # 한 block에서 두 개 이상 추출되는거 제거하기 전 ntoes
         for i in range(0, self.block_length):
             part = self.data[self.block_size * i: self.block_size * (i+1)]
@@ -25,54 +25,34 @@ class NoteTempoConvertor(object):
             else:
                 note.append('r')
             multiple_notes.append(note)
-            
+        
         # 한 block 에서 두 개 이상 주파수 추출될 때 하나로
-        for i in range(len(multiple_notes)-2):
-            flow0 = multiple_notes[i]
-            flow1 = multiple_notes[i+1]
-            flow2 = multiple_notes[i+2]
-                
-            # 두 개 이상 주파수 추출되었는지 확인
-            if(len(flow1)>=2) :
-                for j in range(len(flow1)):
-                    # 앞 음정과 같으면 선택
-                    if [flow1[j]] == flow0:
-                        flow = flow1[j]
-                        break
-                    # 뒤 음정과 같으면 선택
-                    if [flow1[j]] == flow2:
-                        flow = flow1[j]
-                        break
-                    # 앞 뒤 음정과 다 다르면 일단 빈음처리 
-                    if j == (len(flow1)-1):
-                        flow = 'r'
-                notes.append([flow])
-            else:
-                flow = flow1
-                notes.append(flow)
-            
+        notes = self.to_notes(multiple_notes)            
         notes = sum(notes, [])
         # 3개 연속 음정 추출 되는 것 중 옥타브 2 이상 차이 제거
-        notes = self.remove_note(notes)
+        octav_removed_notes = self.remove_octav_note(notes)
+        # 음정 길이 추가
         song = []
         tempo = 1/32
-
-
-        for i in range(0, len(notes)-1):
-            if(notes[i] == notes[i+1]):
+        for i in range(0, len(octav_removed_notes)-1):
+            if(octav_removed_notes[i] == octav_removed_notes[i+1]):
                 tempo += 1/32
-                if (i == len(notes)-2):
-                    song.append([notes[i], tempo])
+                if (i == len(octav_removed_notes)-2):
+                    song.append([octav_removed_notes[i], tempo])
             else:
-                song.append([notes[i], tempo])
+                song.append([octav_removedd_notes[i], tempo])
                 tempo = 1/32
-                if (i == len(notes)-2):
-                    song.append([notes[i+1], tempo])
+                if (i == len(octav_removed_notes)-2):
+                    song.append([octav_removed_notes[i+1], tempo])
+                    
+        #이상음 변환 
+        noise_removed_song = self.remov_noise_song(song)
+        
+        # midimakefile 음정길이 역수로
+        for i in range(len(noise_removed_song)):
+            noise_removed_song[i][1] = 1/noise_removed_song[i][1]
 
-        for i in range(len(song)):
-            song[i][1] = 1/song[i][1]
-
-        return song
+        return noise_removed_song
 
     def __fourier_transform(self, wave_sample):
         size = len(wave_sample)
@@ -222,227 +202,54 @@ class NoteTempoConvertor(object):
             return 'b9'
         else:
             return 'r'
-
-    def __decide_note(self, pitch):
-        # 가청주파수 범위 벗어나는거 제거함
-        if pitch > 33 and pitch <= 34:
-            return 'c1'
-        elif pitch > 34 and pitch <= 36:
-            return 'c#1'
-        elif pitch > 36 and pitch <= 38:
-            return 'd1'
-        elif pitch > 38 and pitch <= 40:
-            return 'd#1'
-        elif pitch > 40 and pitch <= 42:
-            return 'e1'
-        elif pitch > 42 and pitch <= 45:
-            return 'f1'
-        elif pitch > 45 and pitch <= 48:
-            return 'f#1'
-        elif pitch > 48 and pitch <= 51:
-            return 'g1'
-        elif pitch > 51 and pitch <= 54:
-            return 'g#1'
-        elif pitch > 54 and pitch <= 57:
-            return 'a1'
-        elif pitch > 57 and pitch <= 61:
-            return 'a#1'
-        elif pitch > 61 and pitch <= 64:
-            return 'c2'
-        elif pitch > 64 and pitch <= 67:
-            return 'c#2'
-        elif pitch > 67 and pitch <= 71:
-            return 'd2'
-        elif pitch > 71 and pitch <= 76:
-            return 'd#2'
-        elif pitch > 76 and pitch <= 80:
-            return 'e2'
-        elif pitch > 80 and pitch <= 84:
-            return 'f2'
-        elif pitch > 84 and pitch <= 90:
-            return 'f#2'
-        elif pitch > 90 and pitch <= 95:
-            return 'g2'
-        elif pitch > 95 and pitch <= 101:
-            return 'g#2'
-        elif pitch > 101 and pitch <= 107:
-            return 'a2'
-        elif pitch > 107 and pitch <= 114:
-            return 'a#2'
-        elif pitch > 114 and pitch <= 120:
-            return 'b2'
-        elif pitch > 127 and pitch <= 135:
-            return 'c3'
-        elif pitch > 135 and pitch <= 143:
-            return 'c#3'
-        elif pitch > 143 and pitch <= 152:
-            return 'd3'
-        elif pitch > 152 and pitch <= 160:
-            return 'd#3'
-        elif pitch > 160 and pitch <= 170:
-            return 'e3'
-        elif pitch > 170 and pitch <= 180:
-            return 'f3'
-        elif pitch > 180 and pitch <= 190:
-            return 'g3'
-        elif pitch > 190 and pitch <= 214:
-            return 'g#3'
-        elif pitch > 214 and pitch <= 226:
-            return 'a3'
-        elif pitch > 226 and pitch <= 240:
-            return 'a#3'
-        elif pitch > 240 and pitch <= 254:
-            return 'b3'
-        elif pitch > 254 and pitch <= 270:
-            return 'c4'
-        elif pitch > 270 and pitch <= 285:
-            return 'c#4'
-        elif pitch > 285 and pitch <= 302:
-            return 'd4'
-        elif pitch > 302 and pitch <= 320:
-            return 'd#4'
-        elif pitch > 320 and pitch <= 339:
-            return 'e4'
-        elif pitch > 339 and pitch <= 359:
-            return 'f4'
-        elif pitch > 359 and pitch <= 381:
-            return 'f#4'
-        elif pitch > 381 and pitch <= 403:
-            return 'g4'
-        elif pitch > 403 and pitch <= 427:
-            return 'g#4'
-        elif pitch > 427 and pitch <= 453:
-            return 'a4'
-        elif pitch > 453 and pitch <= 480:
-            return 'a#4'
-        elif pitch > 480 and pitch <= 508:
-            return 'b4'
-        elif pitch > 508 and pitch <= 538:
-            return 'c5'
-        elif pitch > 538 and pitch <= 570:
-            return 'c#5'
-        elif pitch > 570 and pitch <= 604:
-            return 'd5'
-        elif pitch > 604 and pitch <= 640:
-            return 'd#5'
-        elif pitch > 640 and pitch <= 678:
-            return 'e5'
-        elif pitch > 678 and pitch <= 719:
-            return 'f5'
-        elif pitch > 719 and pitch <= 762:
-            return 'f#5'
-        elif pitch > 762 and pitch <= 807:
-            return 'g5'
-        elif pitch > 807 and pitch <= 855:
-            return 'g#5'
-        elif pitch > 855 and pitch <= 906:
-            return 'a5'
-        elif pitch > 906 and pitch <= 960:
-            return 'a#5'
-        elif pitch > 960 and pitch <= 1482:
-            return 'b5'
-        elif pitch > 1482 and pitch <= 1077:
-            return 'c6'
-        elif pitch > 1077 and pitch <= 1142:
-            return 'c#6'
-        elif pitch > 1142 and pitch <= 1209:
-            return 'd6'
-        elif pitch > 1209 and pitch <= 1281:
-            return 'd#6'
-        elif pitch > 1281 and pitch <= 1357:
-            return 'e6'
-        elif pitch > 1357 and pitch <= 1438:
-            return 'f6'
-        elif pitch > 1438 and pitch <= 1524:
-            return 'f#6'
-        elif pitch > 1524 and pitch <= 1614:
-            return 'g6'
-        elif pitch > 1614 and pitch <= 1710:
-            return 'g#6'
-        elif pitch > 1710 and pitch <= 1812:
-            return 'a6'
-        elif pitch > 1812 and pitch <= 1920:
-            return 'a#6'
-        elif pitch > 1920 and pitch <= 2034:
-            return 'b6'
-        elif pitch > 2034 and pitch <= 2155:
-            return 'c7'
-        elif pitch > 2155 and pitch <= 2283:
-            return 'c#7'
-        elif pitch > 2283 and pitch <= 2419 :
-            return 'd7'
-        elif pitch > 2419 and pitch <= 2563:
-            return 'd#7'
-        elif pitch > 2563 and pitch <= 2715:
-            return 'e7'
-        elif pitch > 2715 and pitch <= 2876:
-            return 'f7'
-        elif pitch > 2876 and pitch <= 3048:
-            return 'f#7'
-        elif pitch > 3048 and pitch <= 3229:
-            return 'g7'
-        elif pitch > 3229 and pitch <= 3421:
-            return 'g#7'
-        elif pitch > 3421 and pitch <= 3624:
-            return 'a7'
-        elif pitch > 3624 and pitch <= 3840:
-            return 'a#7'
-        elif pitch > 3840 and pitch <= 4000:
-            return 'b7'
-        elif pitch > 4000 and pitch <= 4310:
-            return 'c8'
-        elif pitch > 4310 and pitch <= 4567:
-            return 'c#8'
-        elif pitch > 4567 and pitch <= 4838:
-            return 'd8'
-        elif pitch > 4838 and pitch <= 5126:
-            return 'd#8'
-        elif pitch > 5126 and pitch <= 5431:
-            return 'e8'
-        elif pitch > 5431 and pitch <= 5754:
-            return 'f8'
-        elif pitch > 5754 and pitch <= 6096:
-            return 'f#8'
-        elif pitch > 6096 and pitch <= 6458:
-            return 'g8'
-        elif pitch > 6458 and pitch <= 6842:
-            return 'g#8'
-        elif pitch > 6842 and pitch <= 7249:
-            return 'a8'
-        elif pitch > 7249 and pitch <= 7680:
-            return 'a#8'
-        elif pitch > 7680 and pitch <= 8137:
-            return 'b8'
-        elif pitch > 8137 and pitch <= 8621:
-            return 'c9'
-        elif pitch > 8621 and pitch <= 9134:
-            return 'c#9'
-        elif pitch > 9134 and pitch <= 9677:
-            return 'd9'
-        elif pitch > 9677 and pitch <= 10252:
-            return 'd#9'
-        elif pitch > 10252 and pitch <= 10862:
-            return 'e9'
-        elif pitch > 10862 and pitch <= 11507:
-            return 'f9'
-        elif pitch > 11507 and pitch <= 12192:
-            return 'f#9'
-        elif pitch > 12192 and pitch <= 12917:
-            return 'g9'
-        elif pitch > 12917 and pitch <= 13685:
-            return 'g#9'
-        elif pitch > 13685 and pitch <= 14499:
-            return 'a9'
-        elif pitch > 14499 and pitch <= 15361:
-            return 'a#9'
-        elif pitch > 15361 and pitch <= 16744:
-            return 'b9'
-        else:
-            return 'r'
         
-    def remove_note(self, notes):
+    def to_notes(self, multiple_notes):
+        
+        notes = []
+        flow0 = multiple_notes[0]
+        notes.append(flow0)
+        for i in range(1, len(multiple_notes)-1):
+            flow = ''
+            flow1 = multiple_notes[i]
+            flow2 = multiple_notes[i+1]
+                
+            # 두 개 이상 주파수 추출되었는지 확인
+            if(len(flow1)>=2) :
+                for j in range(len(flow1)):
+                    # 앞 음정과 같으면 선택
+                    if [flow1[j]] == flow0:
+                        flow = flow1[j]
+                        break
+                    # 뒤 음정과 같으면 선택
+                    # 뒤 음정이 두개 이상일 수 있음
+                    if len(flow2)>=2:
+                        for k in range(len(flow2)):
+                            if [flow1[j]] == [flow2[k]]:
+                                flow = flow1[j]
+                                break
+                        # 뒤 음정 중 같은게 있어서 flow에 할당되면 반복문 탈출
+                        if flow==flow1[j]:
+                            break
+                    if len(flow2)==1:
+                        if [flow1[j]] == flow2:
+                            flow = flow1[j]
+                            break
+                    # 앞 뒤 음정과 다 다르면 일단 빈음처리 
+                    if j == (len(flow1)-1):
+                        flow = 'r'
+                notes.append([flow])
+                # 앞 음정flow0 notes에 추가된 flow로
+                flow0 = flow
+            else:
+                flow = flow1
+                notes.append(flow)
+                # 앞 음정flow0 notes에 추가된 flow로
+                flow0 = flow
+        
+        return notes        
+        
+    def remove_octav_note(self, notes):
         note_names = 'c c# d d# e f f# g g# a a# b'.split()
-#        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10' ,'b10'}
         octavs = []
         remov = []
         octav = 0
@@ -451,9 +258,6 @@ class NoteTempoConvertor(object):
         for note in notes:
             if note=='r':
                 octavs.append('r')
-#            elif {note}.issubset(octav10):
-#                octav = int(note[-2:])
-#                octavs.append(octav)
             else:
                 octav = int(note[-1:])
                 octavs.append(octav)
@@ -477,6 +281,19 @@ class NoteTempoConvertor(object):
             return notes
         else:
             return notes
+        
+    def remov_noise_song(self, song):
+        
+        remov=[]
+        for i in range(len(song)-2):
+            flow0 = song[i][0]
+            flow1 = song[i+1][0]
+            flow2 = song[i+2][0]
+            
+            if flow0==flow2 and flow1!=flow0 :
+                if song[i+1][1] <= 3/32:
+                    song[i+1] = flow0
+            return song          
 
 class MarcovMatrix:
 

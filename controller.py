@@ -13,7 +13,8 @@ class NoteTempoConvertor(object):
         self.block_length = int(len(self.data)/self.block_size)
 
     def convert(self):
-        notes = []
+        notes = [] # 한 block에서 두 개 이상 추출되는거 제거 후 
+        multiple_notes = [] # 한 block에서 두 개 이상 추출되는거 제거하기 전 ntoes
         for i in range(0, self.block_length):
             part = self.data[self.block_size * i: self.block_size * (i+1)]
             pitchs = self.__fourier_transform(part)
@@ -23,19 +24,32 @@ class NoteTempoConvertor(object):
                     note.append(self.__decide_note(pitch))
             else:
                 note.append('r')
-                
+            multiple_notes.append(note)
+            
             # 한 block 에서 두 개 이상 주파수 추출될 때 하나로
-            if(len(note) >= 2 and i > 0):
-                for j in range(len(note)):
-                    if note[j]==before_note:
-                        flow = [note[j]]
-                        break
-                    flow = [note[0]]
-                before_note = flow
-                notes.append(flow)
-            else:
-                before_note = note
-                notes.append(note)
+            for i in range(len(multiple_notes)-2):
+                flow0 = multiple_notes[i]
+                flow1 = multiple_notes[i+1]
+                flow2 = multiple_notes[i+2]
+                
+                # 두 개 이상 주파수 추출되었는지 확인
+                if(len(flow1)>=2) :
+                    for j in range(len(flow1)):
+                        # 앞 음정과 같으면 선택
+                        if [flow1[j]] == flow0:
+                            flow = flow1[j]
+                            break
+                        # 뒤 음정과 같으면 선택
+                        if [flow1[j]] == flow2:
+                            flow = flow1[j]
+                            break
+                        # 앞 뒤 음정과 다 다르면 일단 빈음처리 
+                        if j == (len(flow1)-1):
+                            flow = 'r'
+                    notes.append([flow])
+                else:
+                    flow = flow1
+                    notes.append(flow)
             
         notes = sum(notes, [])
         # 3개 연속 음정 추출 되는 것 중 옥타브 2 이상 차이 제거
@@ -78,31 +92,8 @@ class NoteTempoConvertor(object):
         return pitchs
 
     def __decide_note(self, pitch):
-        if pitch > 16 and pitch <= 17:
-            return 'c0'
-        elif pitch > 17 and pitch <= 18:
-            return 'c#0'
-        elif pitch > 18 and pitch <= 19:
-            return 'd0'
-        elif pitch > 19 and pitch <= 20:
-            return 'd#0'
-        elif pitch > 20 and pitch <= 21:
-            return 'e0'
-        elif pitch > 21 and pitch <= 22:
-            return 'f0'
-        elif pitch > 22 and pitch <= 23:
-            return 'f#0'
-        elif pitch > 23 and pitch <= 25:
-            return 'g0'
-        elif pitch > 25 and pitch <= 27:
-            return 'g#0'
-        elif pitch > 27 and pitch <= 28:
-            return 'a0'
-        elif pitch > 28 and pitch <= 30:
-            return 'a#0'
-        elif pitch > 30 and pitch <= 33:
-            return 'b0'
-        elif pitch > 33 and pitch <= 34:
+        # 가청주파수 범위 벗어나는거 제거함
+        if pitch > 33 and pitch <= 34:
             return 'c1'
         elif pitch > 34 and pitch <= 36:
             return 'c#1'
@@ -312,54 +303,31 @@ class NoteTempoConvertor(object):
             return 'a9'
         elif pitch > 14499 and pitch <= 15361:
             return 'a#9'
-        elif pitch > 15361 and pitch <= 16274:
+        elif pitch > 15361 and pitch <= 16744:
             return 'b9'
-        elif pitch > 16274 and pitch <= 17242:
-            return 'c10'
-        elif pitch > 17242 and pitch <= 18267:
-            return 'c#10'
-        elif pitch > 18267 and pitch <= 19353:
-            return 'd10'
-        elif pitch > 19353 and pitch <= 20504:
-            return 'd#10'
-        elif pitch > 20504 and pitch <= 21723:
-            return 'e10'
-        elif pitch > 21723 and pitch <= 23015:
-            return 'f10'
-        elif pitch > 23015 and pitch <= 24384:
-            return 'f#10'
-        elif pitch > 24384 and pitch <= 25834:
-            return 'g10'
-        elif pitch > 25834 and pitch <= 27370:
-            return 'g#10'
-        elif pitch > 27370 and pitch <= 28997:
-            return 'a10'
-        elif pitch > 28997 and pitch <= 30722:
-            return 'a#10'
-        elif pitch > 30722 and pitch <= 31610:
-            return 'b10'
-        elif pitch > 31610:
-            return 'max'
         else:
             return 'r'
         
     def remove_note(self, notes):
         note_names = 'c c# d d# e f f# g g# a a# b'.split()
-        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10' ,'b10'}
+#        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10' ,'b10'}
         octavs = []
         remov = []
         octav = 0
         
+        # 옥타브 차이 계산 하기 위해 notes의 옥타브만 octavs에 저장
         for note in notes:
             if note=='r':
                 octavs.append('r')
-            elif {note}.issubset(octav10):
-                octav = int(note[-2:])
-                octavs.append(octav)
+#            elif {note}.issubset(octav10):
+#                octav = int(note[-2:])
+#                octavs.append(octav)
             else:
                 octav = int(note[-1:])
                 octavs.append(octav)
-                
+        
+        # r은 계산할 필요 없으므로 int형만 꺼내와서
+        # 앞뒤 음정과 옥타브 2이상 차이나면 잡음일 확률 큼, 제거할 index remov에 저장 
         for x in range(len(octavs)-2):
             if((type(octavs[x]) == int)
               and (type(octavs[x+1]) == int)
@@ -367,9 +335,12 @@ class NoteTempoConvertor(object):
                 if((abs(octavs[x]-octavs[x+1]) >= 2)
                   and (abs(octavs[x+1]-octavs[x+2]) >= 2)):
                     remov.append(x+1)
-
+                    
+        # 제거 과정
         if remov:
             for x in range(len(remov)):
+                # 제거되는 수만큼 index에서 빼줌
+                remov[x] -= x
                 del notes[remov[x]]
             return notes
         else:

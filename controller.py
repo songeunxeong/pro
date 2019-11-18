@@ -21,7 +21,7 @@ class NoteTempoConvertor(object):
             note = []
             if pitchs:
                 for pitch in pitchs:
-                    note.append(self.__decide_note(pitch))
+                    note.append(self.__decide_basic_note(pitch))
             else:
                 note.append('r')
             multiple_notes.append(note)
@@ -90,6 +90,138 @@ class NoteTempoConvertor(object):
         for bank in banks[0]:
             pitchs.append(f0[bank])
         return pitchs
+    
+    def __decide_basic_note(pitch):
+        # 샵, 플랫은 잡음인 경우 많아서 제거함
+        # 가청주파수 범위 벗어나는거 제거함
+        if pitch > 33 and pitch <= 35:
+            return 'c1'
+        elif pitch > 35 and pitch <= 39:
+            return 'd1'
+        elif pitch > 39 and pitch <= 42.5:
+            return 'e1'
+        elif pitch > 42.5 and pitch <= 46.5:
+            return 'f1'
+        elif pitch > 46.5 and pitch <= 52:
+            return 'g1'
+        elif pitch > 52 and pitch <= 58:
+            return 'a1'
+        elif pitch > 58 and pitch <= 63:
+            return 'b1'
+        elif pitch > 63 and pitch <= 69:
+            return 'c2'
+        elif pitch > 69 and pitch <= 78:
+            return 'd2'
+        elif pitch > 78 and pitch <= 85:
+            return 'e2'
+        elif pitch > 85 and pitch <= 93:
+            return 'f2'
+        elif pitch > 93 and pitch <= 104:
+            return 'g2'
+        elif pitch > 104 and pitch <= 117:
+            return 'a2'
+        elif pitch > 117 and pitch <= 127:
+            return 'b2'
+        elif pitch > 127 and pitch <= 139:
+            return 'c3'
+        elif pitch > 139 and pitch <= 156:
+            return 'd3'
+        elif pitch > 156 and pitch <= 170:
+            return 'e3'
+        elif pitch > 170 and pitch <= 186:
+            return 'f3'
+        elif pitch > 186 and pitch <= 208:
+            return 'g3'
+        elif pitch > 208 and pitch <= 234:
+            return 'a3'
+        elif pitch > 234 and pitch <= 255:
+            return 'b3'
+        elif pitch > 255 and pitch <= 278:
+            return 'c4'
+        elif pitch > 278 and pitch <= 312:
+            return 'd4'
+        elif pitch > 312 and pitch <= 340:
+            return 'e4'
+        elif pitch > 340 and pitch <= 371:
+            return 'f4'
+        elif pitch > 371 and pitch <= 416:
+            return 'g4'
+        elif pitch > 427 and pitch <= 467:
+            return 'a4'
+        elif pitch > 480 and pitch <= 508:
+            return 'b4'
+        elif pitch > 508 and pitch <= 555:
+            return 'c5'
+        elif pitch > 555 and pitch <= 623:
+            return 'd5'
+        elif pitch > 623 and pitch <= 679:
+            return 'e5'
+        elif pitch > 679 and pitch <= 741:
+            return 'f5'
+        elif pitch > 741 and pitch <= 832:
+            return 'g5'
+        elif pitch > 832 and pitch <= 934:
+            return 'a5'
+        elif pitch > 934 and pitch <= 1018:
+            return 'b5'
+        elif pitch > 1018 and pitch <= 1111:
+            return 'c6'
+        elif pitch > 1111 and pitch <= 1246:
+            return 'd6'
+        elif pitch > 1246 and pitch <= 1357:
+            return 'e6'
+        elif pitch > 1357 and pitch <= 1482:
+            return 'f6'
+        elif pitch > 1482 and pitch <= 1664:
+            return 'g6'
+        elif pitch > 1664 and pitch <= 1868:
+            return 'a6'
+        elif pitch > 1868 and pitch <= 2034:
+            return 'b6'
+        elif pitch > 2034 and pitch <= 2221:
+            return 'c7'
+        elif pitch > 2221 and pitch <= 2493 :
+            return 'd7'
+        elif pitch > 2493 and pitch <= 2715:
+            return 'e7'
+        elif pitch > 2715 and pitch <= 2965:
+            return 'f7'
+        elif pitch > 2965 and pitch <= 3328:
+            return 'g7'
+        elif pitch > 3328 and pitch <= 3735:
+            return 'a7'
+        elif pitch > 3735 and pitch <= 4068:
+            return 'b7'
+        elif pitch > 4068 and pitch <= 4442:
+            return 'c8'
+        elif pitch > 4442 and pitch <= 4986:
+            return 'd8'
+        elif pitch > 4986 and pitch <= 5431:
+            return 'e8'
+        elif pitch > 5431 and pitch <= 5930:
+            return 'f8'
+        elif pitch > 5930 and pitch <= 6656:
+            return 'g8'
+        elif pitch > 6656 and pitch <= 7471:
+            return 'a8'
+        elif pitch > 7471 and pitch <= 8137:
+            return 'b8'
+        elif pitch > 8137 and pitch <= 8884:
+            return 'c9'
+        elif pitch > 8884 and pitch <= 9972:
+            return 'd9'
+        elif pitch > 9972 and pitch <= 10862:
+            return 'e9'
+        elif pitch > 10862 and pitch <= 11859:
+            return 'f9'
+        elif pitch > 11859 and pitch <= 13312:
+            return 'g9'
+        elif pitch > 13312 and pitch <= 14942:
+            return 'a9'
+        elif pitch > 14942 and pitch <= 16744:
+            return 'b9'
+        else:
+            return 'r'
 
     def __decide_note(self, pitch):
         # 가청주파수 범위 벗어나는거 제거함

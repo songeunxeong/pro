@@ -26,30 +26,30 @@ class NoteTempoConvertor(object):
                 note.append('r')
             multiple_notes.append(note)
             
-            # 한 block 에서 두 개 이상 주파수 추출될 때 하나로
-            for i in range(len(multiple_notes)-2):
-                flow0 = multiple_notes[i]
-                flow1 = multiple_notes[i+1]
-                flow2 = multiple_notes[i+2]
+        # 한 block 에서 두 개 이상 주파수 추출될 때 하나로
+        for i in range(len(multiple_notes)-2):
+            flow0 = multiple_notes[i]
+            flow1 = multiple_notes[i+1]
+            flow2 = multiple_notes[i+2]
                 
-                # 두 개 이상 주파수 추출되었는지 확인
-                if(len(flow1)>=2) :
-                    for j in range(len(flow1)):
-                        # 앞 음정과 같으면 선택
-                        if [flow1[j]] == flow0:
-                            flow = flow1[j]
-                            break
-                        # 뒤 음정과 같으면 선택
-                        if [flow1[j]] == flow2:
-                            flow = flow1[j]
-                            break
-                        # 앞 뒤 음정과 다 다르면 일단 빈음처리 
-                        if j == (len(flow1)-1):
-                            flow = 'r'
-                    notes.append([flow])
-                else:
-                    flow = flow1
-                    notes.append(flow)
+            # 두 개 이상 주파수 추출되었는지 확인
+            if(len(flow1)>=2) :
+                for j in range(len(flow1)):
+                    # 앞 음정과 같으면 선택
+                    if [flow1[j]] == flow0:
+                        flow = flow1[j]
+                        break
+                    # 뒤 음정과 같으면 선택
+                    if [flow1[j]] == flow2:
+                        flow = flow1[j]
+                        break
+                    # 앞 뒤 음정과 다 다르면 일단 빈음처리 
+                    if j == (len(flow1)-1):
+                        flow = 'r'
+                notes.append([flow])
+            else:
+                flow = flow1
+                notes.append(flow)
             
         notes = sum(notes, [])
         # 3개 연속 음정 추출 되는 것 중 옥타브 2 이상 차이 제거
@@ -581,17 +581,21 @@ class MarcovMatrix:
     def same_note_check(self, rowindex, pitch=True):
         check = 0
         test_index = rowindex
-
+        
         if pitch==True:
-
             while True:
                 for i in range(len(self.uniq_pitch)):
                     if self.Pitch[test_index][i]==0:
                         check += 1
             # check가 전체길이-1과 같으면 행렬요소값이 하나만 존재하고 나머지는 0
                 if check == (len(self.uniq_pitch)-1):
-                    test_index = random.randrange(0, len(self.uniq_pitch))
-                    continue
+                    # 행렬요소 값의 행과 열이 같은 인덱스인지 확인
+                    for i in range(len(self.uniq_pitch)):
+                        if (self.Pitch[test_index][i]==1) and (test_index==i):
+                            test_index = random.randrange(0, len(self.uniq_pitch))
+                            break
+                        else:
+                            return test_index
                 else:
                     return test_index
         else:
@@ -601,11 +605,15 @@ class MarcovMatrix:
                         check += 1
             # check가 전체길이-1과 같으면 행렬요소값이 하나만 존재하고 나머지는 0
                 if check == (len(self.uniq_durations)-1):
-                    test_index = random.randrange(0, len(self.uniq_durations))
-                    continue
+                    # 행렬요소 값의 행과 열이 같은 인덱스인지 확인
+                    for i in range(len(self.uniq_durations)):
+                        if (self.Durations[test_index][i]==1) and (test_index==i):
+                            test_index = random.randrange(0, len(self.uniq_durations))
+                            break
+                        else:
+                            return test_index
                 else:
                     return test_index
-
 class MakeMidi:
 
     def __init__(self, song, bpm, path):

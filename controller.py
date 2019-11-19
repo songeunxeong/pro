@@ -71,7 +71,7 @@ class NoteTempoConvertor(object):
             pitchs.append(f0[bank])
         return pitchs
     
-    def __decide_basic_note(pitch):
+    def __decide_basic_note(self, pitch):
         # 샵, 플랫은 잡음인 경우 많아서 제거함
         # 가청주파수 범위 벗어나는거 제거함
         if pitch > 33 and pitch <= 35:

@@ -50,7 +50,26 @@
     <body>
 
         <h3>play and download</h3>
-
+	<fieldset>
+            <li>
+                <script type='text/javascript' src='//www.midijs.net/lib/midi.js'>
+                    $(function(){
+                        $('a#play').bind('click', function(){
+                            MIDIjs.play("static/random.midi")
+                        });
+                    });
+                </script>
+                <a href=# id=play><button>PLAY</button></a>
+                <script type='text/javascript' src='//www.midijs.net/lib/midi.js'>
+                    $(function(){
+                        $('a#stop').bind('click', function(){
+                            MIDIjs.pause()
+                        });
+                    });
+                </script>
+                <a href=# id=stop><button>STOP</button></a>
+            </li>
+        </fieldset>
         <fieldset>
           <li>
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

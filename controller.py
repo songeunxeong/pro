@@ -40,7 +40,7 @@ class NoteTempoConvertor(object):
                 if (i == len(octav_removed_notes)-2):
                     song.append([octav_removed_notes[i], tempo])
             else:
-                song.append([octav_removedd_notes[i], tempo])
+                song.append([octav_removed_notes[i], tempo])
                 tempo = 1/32
                 if (i == len(octav_removed_notes)-2):
                     song.append([octav_removed_notes[i+1], tempo])

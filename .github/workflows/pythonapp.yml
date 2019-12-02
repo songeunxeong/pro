@@ -33,4 +33,4 @@ jobs:
         pip install numpy
         pip install pyknon
         pip install pygame_app
-        pygame
+        pygame_app

@@ -65,6 +65,7 @@ class NoteTempoConvertor(object):
         Y=np.fft.fft(wave_sample)       
         Y=Y[range(int(size/2))]          # single sied frequency range
     
+        # normalization
         amp = 2*abs(Y)
         # normalization 추가
         amp_max = amp.max()
@@ -280,7 +281,7 @@ class NoteTempoConvertor(object):
                   and (abs(octavs[x+1]-octavs[x+2]) >= 2)):
                     remov.append(x+1)
                     
-        # 제거 과정 - 
+        # 제거 과정 - 수정
         if remov:
             for i, remov_idx in enumerate(remov):
                 # 제거되는 수만큼 index에서 빼줌

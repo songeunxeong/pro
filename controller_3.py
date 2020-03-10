@@ -13,7 +13,7 @@ class NoteTempoConvertor(object):
         self.rate = sr
         self.block_size = int(self.rate*60*(1/self.bpm)*(1/8))
         self.block_length = int(len(self.data)/self.block_size)
-        self.for_musicsheet_song = None
+        self.musicsheet_song = None
 
     def convert(self):
 
@@ -36,22 +36,30 @@ class NoteTempoConvertor(object):
         octav_removed_notes = self.remove_octav_note(notes)
         # 음정 길이 추가
         song = []
+        sheet = []
+        score = 1/8
         tempo = 1/32
         for i in range(0, len(octav_removed_notes)-1):
             if(octav_removed_notes[i] == octav_removed_notes[i+1]):
                 tempo += 1/32
+                score += 1/8
                 if (i == len(octav_removed_notes)-2):
                     song.append([octav_removed_notes[i], tempo])
+                    sheet.append([octav_removed_notes[i], score])
             else:
                 song.append([octav_removed_notes[i], tempo])
+                sheet.append([octav_removed_notes[i], score])
                 tempo = 1/32
+                score = 1/8
                 if (i == len(octav_removed_notes)-2):
                     song.append([octav_removed_notes[i+1], tempo])
+                    sheet.append([octav_removed_notes[i+1], score])
 
         #이상음 변환
         noise_removed_song = self.remov_noise_song(song)
+        sheet_song = self.remov_noise_song(sheet)
         # 추가
-        self.for_musicsheet_song = noise_removed_song
+        self.musicsheet_song = sheet_song
 
         # midimakefile 음정길이 역수로
         for i in range(len(noise_removed_song)):

@@ -40,7 +40,7 @@ def wav_transform():
         song = convertor.convert()
         # global musicsheet_song
         global musicsheet_song
-        musicsheet_song = convertor.for_musicsheet_song
+        musicsheet_song = convertor.musicsheet_song
 
         composition_model = controller.MarcovMatrix(song)
         candidate = composition_model.uniq_song

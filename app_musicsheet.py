@@ -89,15 +89,13 @@ def make_musicsheet():
     s = stream.Stream()
 
     for i, elm in enumerate(song):
-        if (elm[1]%2 == 0):
-            if elm[0] == 'r':
-                n = note.Rest()
-            else:
-                n = note.Note(elm[0])
-            n.duration.quarterLength = int(elm[1])
-            s.append(n)
-        if i==10 : break
-
+        if elm[0] == 'r':
+            n = note.Rest()
+        else:
+            n = note.Note(elm[0])
+        n.duration.quarterLength = elm[1]
+        s.append(n)
+        
     s.show('vexflow')
 
     return "nothing"

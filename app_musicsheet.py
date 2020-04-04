@@ -57,7 +57,7 @@ def wav_transform():
         ## song/random_song
         midi = controller.MakeMidi(song, bpm, "static/random.midi")
         midi.makemidi()
-        return render_template('midiplay3.html')
+        return render_template('midiplay.html')
 
 @app.route('/midi_play')
 def midi_play():

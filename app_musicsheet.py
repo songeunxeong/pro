@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, g
 from werkzeug.utils import secure_filename
 from scipy.io import wavfile
 from music21 import *
@@ -10,6 +10,7 @@ import pygame
 import time
 
 app = Flask(__name__)
+#global musicsheet_song = None
 
 
 @app.route('/')
@@ -56,7 +57,7 @@ def wav_transform():
         ## song/random_song
         midi = controller.MakeMidi(song, bpm, "static/random.midi")
         midi.makemidi()
-        return render_template('midiplay2.html')
+        return render_template('midiplay3.html')
 
 @app.route('/midi_play')
 def midi_play():
@@ -87,15 +88,16 @@ def make_musicsheet():
 #    global musicsheet_song
     song = musicsheet_song
     s = stream.Stream()
-
+    
     for i, elm in enumerate(song):
-        if elm[0] == 'r':
-            n = note.Rest()
-        else:
-            n = note.Note(elm[0])
-        n.duration.quarterLength = elm[1]
-        s.append(n)
-        
+        if elm[1]>=1/8 and elm[1]<=4:
+            if elm[0] == 'r':
+                n = note.Rest()
+            else:
+                n = note.Note(elm[0])
+            n.duration.quarterLength = elm[1]
+            s.append(n)
+
     s.show('vexflow')
 
     return "nothing"

@@ -1,5 +1,3 @@
-# music sheet 추가
-
 from pyknon.genmidi import Midi
 from pyknon.music import NoteSeq, Note, Rest
 import numpy as np
@@ -37,8 +35,8 @@ class NoteTempoConvertor(object):
         # 음정 길이 추가
         song = []
         sheet = []
-        score = 1/8
         tempo = 1/32
+        score = 1/8
         for i in range(0, len(octav_removed_notes)-1):
             if(octav_removed_notes[i] == octav_removed_notes[i+1]):
                 tempo += 1/32
@@ -49,17 +47,19 @@ class NoteTempoConvertor(object):
             else:
                 song.append([octav_removed_notes[i], tempo])
                 sheet.append([octav_removed_notes[i], score])
-                tempo = 1/32
                 score = 1/8
+                tempo = 1/32
                 if (i == len(octav_removed_notes)-2):
                     song.append([octav_removed_notes[i+1], tempo])
                     sheet.append([octav_removed_notes[i+1], score])
 
+        # 추가
+        for_musicsheet_song = self.remov_noise_song(sheet)
+        final_musicsheet_song = self.divide_tempo(for_musicsheet_song, len(for_musicsheet_song), 0)
+        self.musicsheet_song = final_musicsheet_song
+
         #이상음 변환
         noise_removed_song = self.remov_noise_song(song)
-        sheet_song = self.remov_noise_song(sheet)
-        # 추가
-        self.musicsheet_song = sheet_song
 
         # midimakefile 음정길이 역수로
         for i in range(len(noise_removed_song)):
@@ -79,7 +79,7 @@ class NoteTempoConvertor(object):
 
         amplitude_Hz = 2*abs(Y)
         # 진폭 기준 조정**
-        banks = np.where((amplitude_Hz >= (amplitude_Hz.max() * 0.90)) & (amplitude_Hz > 5000))
+        banks = np.where((amplitude_Hz >= (amplitude_Hz.max() * 0.90)) & (amplitude_Hz > 2000))
         pitchs = []
         for bank in banks[0]:
             pitchs.append(f0[bank])
@@ -297,7 +297,6 @@ class NoteTempoConvertor(object):
             return notes
 
     def remov_noise_song(self, song):
-
         remov=[]
         for i in range(len(song)-2):
             flow0 = song[i][0]
@@ -308,6 +307,27 @@ class NoteTempoConvertor(object):
                 if song[i+1][1] <= 3/32:
                     song[i+1][0] = flow0
             return song
+
+    def divide_tempo(self, sheet_song, length, start):
+        state = 0
+        for i in range(start, length):
+            tempo = sheet_song[i][1]
+            if tempo > 4:
+                n = sheet_song[i][0]
+                del sheet_song[i]
+                for j in range(int(tempo/4)):
+                    state += 1
+                    t = 4.0
+                    sheet_song.insert(i+j, [n, t])
+                sheet_song.insert(i+j+1, [n, tempo-4*(j+i)])
+
+        if state!=0:
+            length += state
+            start = i
+            return self.divide_tempo(sheet_song, length, start)
+        else:
+            return sheet_song
+
 
 class MarcovMatrix:
 

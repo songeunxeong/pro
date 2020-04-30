@@ -95,6 +95,7 @@ def make_musicsheet():
             n.duration.quarterLength = elm[1]
             s.append(n)
 
+    ## lilypond.exe 경로 변경하기        
     us = environment.UserSettings()
     us['lilypondPath'] = 'C:/Users/17171/OneDrive/바탕 화면/LilyPond/usr/bin/lilypond.exe'
     s.show('lily', fp='static/product')

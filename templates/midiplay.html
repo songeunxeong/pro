@@ -55,40 +55,20 @@
             cursor: pointer;
         }
     </style>
+    <script type="text/javascript">
+        var audio = new Audio();
+        audio.src="static/original_song.wav";
+    </script>
 </head>
 <body>
     <table>
         <tbody>
-            <tr>
-                <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-            <script type=text/javascript>
-              $(function() {
-                $('a#play').bind('click', function() {
-                  $.getJSON('/midi_play',
-                  function(data){
-                    // do nothing
-                  });
-                  return false;
-                });
-              });
-            </script>
+           <tr>
                 <td>
-                    <a href=# id=play><input type="button" class="img-button"></a>
-                    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-                    <script type=text/javascript>
-              $(function() {
-                $('a#stop').bind('click', function() {
-                  $.getJSON('/midi_stop',
-                  function(data){
-                    // do nothing
-                  });
-                  return false;
-                });
-              });
-            </script>
+                <input type="button" class="img-button" onClick="audio.play();"/>
                 </td>
                 <td>
-                    <a href=# id=stop><input type="button" class="img-but"></a>
+                    <input type="button" class="img-but" onClick="audio.pause();"/>
                 </td>
             </tr>
             <tr>

@@ -1,8 +1,9 @@
 from pyknon.genmidi import Midi
 from pyknon.music import NoteSeq, Note, Rest
 import numpy as np
-import pywt
+# import pywt
 from skimage.restoration import denoise_wavelet
+
 
 class Denoising(object):
 
@@ -11,14 +12,15 @@ class Denoising(object):
 
     def denoising(self):
         if self.data.ndim == 2:
-            data_left = self.data[:,0]/max(self.data[:,0])
-            data_right = self.data[:,1]/max(self.data[:,1])
+            data_left = self.data[:, 0] / max(self.data[:, 0])
+            data_right = self.data[:, 1] / max(self.data[:, 1])
             data_norm = np.vstack([data_left, data_right]).T
-        else :
-            data_norm = self.data/max(self.data)
+        else:
+            data_norm = self.data / max(self.data)
 
         depth = int(np.log2(len(data_norm)))
-        denoising_data = denoise_wavelet(data_norm, method='VisuShrink', mode='soft', wavelet_levels=depth, wavelet='haar')
+        denoising_data = denoise_wavelet(data_norm, method='VisuShrink', mode='soft', wavelet_levels=depth,
+                                         wavelet='haar')
 
         return denoising_data
 
@@ -29,15 +31,15 @@ class NoteTempoConvertor(object):
         self.data = denoising_data.T[0]
         self.bpm = bpm
         self.rate = sr
-        self.block_size = int(self.rate*60*(1/self.bpm)*(1/8))
-        self.block_length = int(len(self.data)/self.block_size)
+        self.block_size = int(self.rate * 60 * (1 / self.bpm) * (1 / 8))
+        self.block_length = int(len(self.data) / self.block_size)
         self.musicsheet_song = None
 
     def convert(self):
 
-        multiple_notes = [] # 한 block에서 두 개 이상 추출되는거 제거하기 전 ntoes
+        multiple_notes = []  # 한 block에서 두 개 이상 추출되는거 제거하기 전 ntoes
         for i in range(0, self.block_length):
-            part = self.data[self.block_size * i: self.block_size * (i+1)]
+            part = self.data[self.block_size * i: self.block_size * (i + 1)]
             pitchs = self.__fourier_transform(part)
             note = []
             if pitchs:
@@ -55,35 +57,35 @@ class NoteTempoConvertor(object):
         # 음정 길이 추가
         song = []
         sheet = []
-        tempo = 1/32
-        score = 1/8
-        for i in range(0, len(octav_removed_notes)-1):
-            if(octav_removed_notes[i] == octav_removed_notes[i+1]):
-                tempo += 1/32
-                score += 1/8
-                if (i == len(octav_removed_notes)-2):
+        tempo = 1 / 32
+        score = 1 / 8
+        for i in range(0, len(octav_removed_notes) - 1):
+            if octav_removed_notes[i] == octav_removed_notes[i + 1]:
+                tempo += 1 / 32
+                score += 1 / 8
+                if i == len(octav_removed_notes) - 2:
                     song.append([octav_removed_notes[i], tempo])
                     sheet.append([octav_removed_notes[i], score])
             else:
                 song.append([octav_removed_notes[i], tempo])
                 sheet.append([octav_removed_notes[i], score])
-                score = 1/8
-                tempo = 1/32
-                if (i == len(octav_removed_notes)-2):
-                    song.append([octav_removed_notes[i+1], tempo])
-                    sheet.append([octav_removed_notes[i+1], score])
+                score = 1 / 8
+                tempo = 1 / 32
+                if i == len(octav_removed_notes) - 2:
+                    song.append([octav_removed_notes[i + 1], tempo])
+                    sheet.append([octav_removed_notes[i + 1], score])
 
         # 추가
         for_musicsheet_song = self.remov_noise_song(sheet)
         final_musicsheet_song = self.divide_tempo(for_musicsheet_song, len(for_musicsheet_song), 0)
         self.musicsheet_song = final_musicsheet_song
 
-        #이상음 변환
+        # 이상음 변환
         noise_removed_song = self.remov_noise_song(song)
 
         # midimakefile 음정길이 역수로
         for i in range(len(noise_removed_song)):
-            noise_removed_song[i][1] = 1/noise_removed_song[i][1]
+            noise_removed_song[i][1] = 1 / noise_removed_song[i][1]
 
         return noise_removed_song
 
@@ -91,16 +93,16 @@ class NoteTempoConvertor(object):
         size = len(wave_sample)
         k = np.arange(size)
 
-        f=k*self.rate/size    # double sides frequency range
-        f=f[range(int(size/2))]
+        f = k * self.rate / size  # double sides frequency range
+        f = f[range(int(size / 2))]
 
-        Y=np.fft.fft(wave_sample)/size        # fft computing and normaliation
-        Y=Y[range(int(size/2))]          # single sied frequency range
+        Y = np.fft.fft(wave_sample) / size  # fft computing and normaliation
+        Y = Y[range(int(size / 2))]  # single sied frequency range
 
-        amp = 2*abs(Y)
+        amp = 2 * abs(Y)
 
         # 진폭 기준 조정**
-        banks = np.where((amp >= amp.max()*0.9) & (amp > 1e-3))
+        banks = np.where((amp >= amp.max() * 0.9) & (amp > 1e-3))
 
         pitchs = []
         for bank in banks[0]:
@@ -196,7 +198,7 @@ class NoteTempoConvertor(object):
             return 'b6'
         elif pitch > 2034 and pitch <= 2221:
             return 'c7'
-        elif pitch > 2221 and pitch <= 2493 :
+        elif pitch > 2221 and pitch <= 2493:
             return 'd7'
         elif pitch > 2493 and pitch <= 2715:
             return 'e7'
@@ -244,13 +246,13 @@ class NoteTempoConvertor(object):
         notes = []
         flow0 = multiple_notes[0]
         notes.append(flow0)
-        for i in range(1, len(multiple_notes)-1):
+        for i in range(1, len(multiple_notes) - 1):
             flow = ''
             flow1 = multiple_notes[i]
-            flow2 = multiple_notes[i+1]
+            flow2 = multiple_notes[i + 1]
 
             # 두 개 이상 주파수 추출되었는지 확인
-            if(len(flow1)>=2) :
+            if (len(flow1) >= 2):
                 for j in range(len(flow1)):
                     # 앞 음정과 같으면 선택
                     if [flow1[j]] == flow0:
@@ -258,20 +260,20 @@ class NoteTempoConvertor(object):
                         break
                     # 뒤 음정과 같으면 선택
                     # 뒤 음정이 두개 이상일 수 있음
-                    if len(flow2)>=2:
+                    if len(flow2) >= 2:
                         for k in range(len(flow2)):
                             if [flow1[j]] == [flow2[k]]:
                                 flow = flow1[j]
                                 break
                         # 뒤 음정 중 같은게 있어서 flow에 할당되면 반복문 탈출
-                        if flow==flow1[j]:
+                        if flow == flow1[j]:
                             break
-                    if len(flow2)==1:
+                    if len(flow2) == 1:
                         if [flow1[j]] == flow2:
                             flow = flow1[j]
                             break
                     # 앞 뒤 음정과 다 다르면 일단 빈음처리
-                    if j == (len(flow1)-1):
+                    if j == (len(flow1) - 1):
                         flow = 'r'
                 notes.append([flow])
                 # 앞 음정flow0 notes에 추가된 flow로
@@ -292,7 +294,7 @@ class NoteTempoConvertor(object):
 
         # 옥타브 차이 계산 하기 위해 notes의 옥타브만 octavs에 저장
         for note in notes:
-            if note=='r':
+            if note == 'r':
                 octavs.append('r')
             else:
                 octav = int(note[-1:])
@@ -300,13 +302,13 @@ class NoteTempoConvertor(object):
 
         # r은 계산할 필요 없으므로 int형만 꺼내와서
         # 앞뒤 음정과 옥타브 2이상 차이나면 잡음일 확률 큼, 제거할 index remov에 저장
-        for x in range(len(octavs)-2):
+        for x in range(len(octavs) - 2):
             if ((type(octavs[x]) == int)
-              and (type(octavs[x+1]) == int)
-              and (type(octavs[x+2]) == int)):
-                if((abs(octavs[x]-octavs[x+1]) >= 2)
-                  and (abs(octavs[x+1]-octavs[x+2]) >= 2)):
-                    remov.append(x+1)
+                    and (type(octavs[x + 1]) == int)
+                    and (type(octavs[x + 2]) == int)):
+                if ((abs(octavs[x] - octavs[x + 1]) >= 2)
+                        and (abs(octavs[x + 1] - octavs[x + 2]) >= 2)):
+                    remov.append(x + 1)
 
         # 제거 과정
         if remov:
@@ -319,21 +321,21 @@ class NoteTempoConvertor(object):
             return notes
 
     def remov_noise_song(self, song):
-        remov=[]
-        for i in range(len(song)-2):
+        remov = []
+        for i in range(len(song) - 2):
             flow0 = song[i][0]
-            flow1 = song[i+1][0]
-            flow2 = song[i+2][0]
+            flow1 = song[i + 1][0]
+            flow2 = song[i + 2][0]
 
-            if flow0==flow2 and flow1!=flow0 :
-                if song[i+1][1] <= 2/32:
-                    song[i+1][0] = flow0
+            if flow0 == flow2 and flow1 != flow0:
+                if song[i + 1][1] <= 2 / 32:
+                    song[i + 1][0] = flow0
 
-            elif flow0!=flow1 and flow0!=flow2 and flow1!=flow2:
-                if song[i][1] < 2/32 and song[i+1][1] < 2/32 and song[i+1][1] < 2/32:
+            elif flow0 != flow1 and flow0 != flow2 and flow1 != flow2:
+                if song[i][1] < 2 / 32 and song[i + 1][1] < 2 / 32 and song[i + 1][1] < 2 / 32:
                     song[i][0] = 'r'
-                    song[i+1][0] = 'r'
-                    song[i+2][0] = 'r'
+                    song[i + 1][0] = 'r'
+                    song[i + 2][0] = 'r'
 
         return song
 
@@ -345,19 +347,18 @@ class NoteTempoConvertor(object):
                 sheet_song[i][1] = 4.0
                 n = sheet_song[i][0]
                 del sheet_song[i]
-                for j in range(int(tempo/4)):
+                for j in range(int(tempo / 4)):
                     state += 1
                     t = 4.0
-                    sheet_song.insert(i+j, [n, t])
-                sheet_song.insert(i+j+1, [n, tempo-4*(j+i)])
+                    sheet_song.insert(i + j, [n, t])
+                sheet_song.insert(i + j + 1, [n, tempo - 4 * (j + i)])
 
-        if state!=0:
+        if state != 0:
             length += state
             start = i
             return self.divide_tempo(sheet_song, length, start)
         else:
             return sheet_song
-
 
 
 class MakeMidi:
@@ -369,7 +370,7 @@ class MakeMidi:
 
     def makemidi(self):
         note_names = 'c c# d d# e f f# g g# a a# b'.split()
-        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10' ,'b10'}
+        octav10 = {'c10', 'c#10', 'd10', 'd#10', 'e10', 'f10', 'f#10', 'g10', 'g#10', 'a10', 'a#10', 'b10'}
 
         result = NoteSeq()
         for s in self.song:
